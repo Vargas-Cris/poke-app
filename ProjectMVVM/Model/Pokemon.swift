@@ -14,10 +14,10 @@ struct Pokemon: Decodable {
     let results: [Result]
     
 }
-   struct Result: Decodable {
-        
-        let name: String
-        let url: String
-    }
+
+struct Result: Decodable {
+    let name: String
+    let url: String
+}
 
 
