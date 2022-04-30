@@ -2,21 +2,42 @@
 //  PokeDetailViewController.swift
 //  ProjectMVVM
 //
-//  Created by MAC21 on 30/04/22.
+//  Created by MAC12 on 30/04/22.
 //
 
 import UIKit
 
 class PokeDetailViewController: UIViewController {
+    // vamos a declarar que variable necesito
+        var url: String = ""
+    var pokemon : PokeDetail? =  nil
+       
+    @IBOutlet weak var lblNamePokemon: UILabel!
     
-    // vamos adeclarar que varible necesiamos
-    var url: String? = nil
-
+    @IBOutlet weak var lblType: UILabel!
+    @IBOutlet weak var imagePokemon: UIImageView!
+    
+        
+        let pokeViewModel: PokeViewModel = PokeViewModel()
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(url)
+        Task{
+            await setUpView()
+        }
 
-        // Do any additional setup after loading the view.
+        
+    }
+    func setUpView()async{
+        await pokeViewModel.getPokeDetail(url: url)
+        pokemon = pokeViewModel.pokemon
+        setUpPokeData()
+    }
+    func setUpPokeData()
+    {
+        view.backgroundColor = PokeTypes.types[(pokemon?.types[0].type.name)!]
+        lblType.text = pokemon?.types[0].type.name ?? ""
+        lblNamePokemon.text=pokemon?.name.capitalized
+        imagePokemon.image = HelperImage.setImageFromURL(url: (pokemon?.sprites.other.officialArtwork.front_default)!)
     }
     
 

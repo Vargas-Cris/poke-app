@@ -2,15 +2,17 @@
 //  PokeDetail.swift
 //  ProjectMVVM
 //
-//  Created by MAC21 on 30/04/22.
+//  Created by MAC12 on 30/04/22.
 //
-
 import Foundation
+
 struct PokeDetail: Codable {
     
     let name: String
     let weight: Int
     let sprites: Sprites
+    let types: [Types]
+    
 }
 
 struct Sprites: Codable {
@@ -29,5 +31,12 @@ struct Other: Codable {
 struct Official: Codable {
     let front_default: String
 }
+struct Types: Codable {
+    let slot: Int
+    let type: TypePoke
+}
 
-
+struct TypePoke: Codable {
+    let name: String
+    let url: String
+}

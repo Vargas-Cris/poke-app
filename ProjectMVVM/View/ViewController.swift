@@ -7,7 +7,8 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController{
+    
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -15,8 +16,13 @@ class ViewController: UIViewController {
     let pokeViewModel: PokeViewModel = PokeViewModel()
     
     var filterData: [Result] = []
-    var urlToDetail: String? = nil
     
+    var urlToDetail : String? = nil
+    override func loadView() {
+        super.loadView()
+    }
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
@@ -27,66 +33,64 @@ class ViewController: UIViewController {
     
     func setUpData() async {
         await pokeViewModel.getDataFromAPI()
+        print(pokeViewModel.pokemons)
         filterData = pokeViewModel.pokemons
         tableView.reloadData()
-    }
+           }
     
-    func setUpView() {
-        tableView.delegate = self
-        tableView.dataSource = self
-        searchBar.delegate = self
+    func setUpView(){
+        tableView.delegate=self
+        tableView.dataSource=self
+        searchBar.delegate=self
         navigationItem.backButtonTitle = ""
     }
     
-}
 
-// Vamos a crear un extension del ViewController el cual tenga los protocolos de la table
-// MARK: Table
+}
+    
+//creamos un extens
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     // Retorna el numero de celdas que tendra la tabla
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filterData.count
+
     }
-    
     // Setear los valores en la tabla
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
-        // La forma en la cual podemos saber la posicion actual de nuestra celda es con indexPath.row
-        let pokemon = filterData[indexPath.row]
-        cell.textLabel?.text = pokemon.name.capitalized
-        cell.imageView?.image = HelperImage.setImage(id: HelperString.getIdFromUrl(url: pokemon.url))
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        urlToDetail = filterData[indexPath.row].url
-        performSegue(withIdentifier: "detail", sender: self)
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+            //La forma en la que podemos saber la posicion actual de nuestra cola es con index Path row
+            let pokemon = filterData[indexPath.row]
+            cell.textLabel?.text = pokemon.name.capitalized
+            cell.imageView?.image = HelperImage.setImage(id: HelperString.getIdFromUrl(url: filterData[indexPath.row].url))
+            return cell
+        }
+    func tableView(_ tableView: UITableView,didSelectRowAt indexPath: IndexPath){
         
+        urlToDetail = filterData[indexPath.row].url
+        performSegue(withIdentifier: "detail", sender: nil)
     }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
-        if segue.identifier == "detail" {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "detail"{
             let pokeDetailView = segue.destination as! PokeDetailViewController
-            pokeDetailView.url = urlToDetail
+            pokeDetailView.url = urlToDetail!
+            
         }
     }
 }
 
-// Extension para mi searchbar
-// MARK: SearchBar
-extension ViewController: UISearchBarDelegate {
-    
+extension ViewController: UISearchBarDelegate{
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // searchText: Es el texto que estamos escribiendo es decir es como un onChange cada vez
-        // que escribimos esta funcion se ejecuta
+        //searchText es el texto que estamos escribineodes como un exchange
+        //cada vez que se escribe esta funcion se ejecuta
         filterData = searchText.isEmpty
         ? pokeViewModel.pokemons
-        : pokeViewModel.pokemons.filter({ (pokemon: Result) -> Bool in
-            return pokemon.name.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
+        : pokeViewModel.pokemons.filter({(pokemon: Result)-> Bool in
+            return pokemon.name.range(of: searchText,options: .caseInsensitive, range: nil, locale: nil) != nil
+            
         })
         tableView.reloadData()
     }
-    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.endEditing(true)
     }
